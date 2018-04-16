@@ -115,7 +115,7 @@ int getName()
 //print:
 //        OWE+  DEPOSIT+
 // Kelsea  O:15 D:80
-// WORD: DICK
+// WORD: WHATEVER
 void printAll(int index) 
 {
   //int index = getPlayerIndex(player);
@@ -135,7 +135,7 @@ void printAll(int index)
 
   //third line
   //lcd.setCursor(0, 3);
-  lcd.print("WORD: COLD");
+  lcd.print("WORD: STEVEN");
 }
 
 
