@@ -44,17 +44,27 @@
 // initialize the library by associating any needed LCD interface pin
 // with the arduino pin number it is connected to
 const int rs = 12, en = 11, d4 = 5, d5 = 4, d6 = 3, d7 = 2,
-          potMax = 1024;
+          potMax = 1024, owePin = 7, depositPin = 8;
+const int numPlayers = 3;
 const String players[] = {"Cai", "Kelsea", "Nick"};
-int playerRange[3];
+int playerRange[numPlayers];
+int owed[numPlayers]; //array of how many times each player still has to deposit change
+int deposited[numPlayers]; //array of how many times each player has deposited change
 LiquidCrystal lcd(rs, en, d4, d5, d6, d7);
 int potPin = 0;
+int oweState = 0, depState = 0;
 
 void setup() {
-  for (int i = 0; i < sizeof(playerRange)/sizeof(int); i++)
+  for (int i = 0; i < numPlayers; i++)
   {
    playerRange[i] =  (potMax / 3) * (i+1);
+   owed[i] = 0;
+   deposited[i] = 0;
   }
+  //set up buttons
+  pinMode(owePin, INPUT);
+  pinMode(depositPin, INPUT);
+  
   // set up the LCD's number of columns and rows:
   lcd.begin(16, 2);
   // Print a message to the LCD.
@@ -63,26 +73,107 @@ void setup() {
 
 void loop() {
   // Turn off the display:
-  lcd.clear();
-  lcd.print(getName());
+  int player = getName();
+  //lcd.clear();
+  //lcd.print(players[player]);
+
+  //Print to display
+  printAll(player);
+
+  //get button input
+  oweState = digitalRead(owePin);
+  if (oweState == HIGH) {
+    addOwe(player);
+  }
+
+  depState = digitalRead(depositPin);
+  if (depState == HIGH) {
+    addDeposit(player);
+  }
+  
   delay(500);
   // Turn on the display:
 }
 
-String getName()
+int getName()
 {
   int input = analogRead(potPin);
 
-  for (int i = 0; i < sizeof(playerRange)/sizeof(int); i++)
+  for (int i = 0; i < numPlayers; i++)
   {
     if (input <= playerRange[i])
     {
-      return players[i] + " " + input;
+      //return players[i] + " " + input;
+      return i;
     }
   }
   //if potentiometer reads out of range for some reason
-  return players[0] + " " + input;
-  
-  
+  //return players[0] + " " + input; 
+  return 0;
 }
+
+//print:
+//        OWE+  DEPOSIT+
+// Kelsea  O:15 D:80
+// WORD: DICK
+void printAll(int index) 
+{
+  //int index = getPlayerIndex(player);
+  //first line
+  lcd.clear();
+  lcd.print("       OWE+ DEPOSIT+");
+
+  //second line
+  lcd.setCursor(0, 1);
+  lcd.print(players[index]);
+  lcd.setCursor(7, 1);
+  lcd.print("O:");
+  lcd.print(owed[index]);
+  lcd.print("  D:");
+  lcd.print(deposited[index]);
+  lcd.print("     ");
+
+  //third line
+  //lcd.setCursor(0, 3);
+  lcd.print("WORD: COLD");
+}
+
+
+int addOwe(int player) 
+{
+  owed[player]++;
+  lcd.clear();
+  lcd.print("Owed one coin.");
+  lcd.setCursor(0, 1);
+  lcd.print("New amount owed for " + players[player] + ":");
+  lcd.print(owed[player]);
+  delay(250);
+  return owed[player];
+}
+
+int addDeposit(int player) 
+{
+  deposited[player]++;
+  if (owed[player] > 0) {
+    owed[player]--;
+  }
+  lcd.clear();
+  lcd.print("Deposited one coin!");
+  lcd.setCursor(0, 1);
+  lcd.print("New amount deposited for " + players[player] + ":");
+  lcd.print(deposited[player]);
+  delay(250);
+  return deposited[player];
+}
+
+//int getPlayerIndex(String player)
+//{
+//  for (int i = 0; i < numPlayers; i++) {
+//    if (players[i] == player) {
+//      return i;
+//    }
+//  }
+//  return -1;
+//}
+
 
