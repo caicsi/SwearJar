@@ -41,6 +41,7 @@
 
 // include the library code:
 #include <LiquidCrystal.h>
+#include <EEPROM.h>
 // initialize the library by associating any needed LCD interface pin
 // with the arduino pin number it is connected to
 const int rs = 12, en = 11, d4 = 5, d5 = 4, d6 = 3, d7 = 2,
@@ -50,16 +51,30 @@ const String players[] = {"Cai", "Kelsea", "Nick"};
 int playerRange[numPlayers];
 int owed[numPlayers]; //array of how many times each player still has to deposit change
 int deposited[numPlayers]; //array of how many times each player has deposited change
+//int storage[numPlayers * 2]; //array of # of change owed and deposited
 LiquidCrystal lcd(rs, en, d4, d5, d6, d7);
 int potPin = 0;
 int oweState = 0, depState = 0;
 
+// EEPROM storage:
+// first byte says whether or not it has been initialized
+// followed by: owed, deposited. 
+
 void setup() {
+
+  //check if it has been initialized
+  if (EEPROM.read(0) != 1) {
+      for (int i = 0; i < numPlayers; i++) {
+        EEPROM.write(i, 0);
+      }
+      EEPROM.write(0, 1);
+  }
+  
   for (int i = 0; i < numPlayers; i++)
   {
    playerRange[i] =  (potMax / 3) * (i+1);
-   owed[i] = 0;
-   deposited[i] = 0;
+   owed[i] = EEPROM.read(i);
+   deposited[i] = EEPROM.read(i + numPlayers);
   }
   //set up buttons
   pinMode(owePin, INPUT);
@@ -69,6 +84,7 @@ void setup() {
   lcd.begin(16, 2);
   // Print a message to the LCD.
   lcd.display();
+
 }
 
 void loop() {
@@ -147,6 +163,7 @@ int addOwe(int player)
   lcd.setCursor(0, 1);
   lcd.print("New amount owed for " + players[player] + ":");
   lcd.print(owed[player]);
+  EEPROM.write(player, owed[player]);
   delay(250);
   return owed[player];
 }
@@ -156,12 +173,14 @@ int addDeposit(int player)
   deposited[player]++;
   if (owed[player] > 0) {
     owed[player]--;
+    EEPROM.write(player, owed[player]);
   }
   lcd.clear();
   lcd.print("Deposited one coin!");
   lcd.setCursor(0, 1);
   lcd.print("New amount deposited for " + players[player] + ":");
   lcd.print(deposited[player]);
+  EEPROM.write(player, deposited[player]);
   delay(250);
   return deposited[player];
 }
