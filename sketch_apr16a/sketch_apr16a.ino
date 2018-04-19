@@ -47,6 +47,7 @@
 const int rs = 12, en = 11, d4 = 5, d5 = 4, d6 = 3, d7 = 2,
           potMax = 1024, owePin = 7, depositPin = 8;
 const int numPlayers = 3;
+int offset = numPlayers + 1;
 const String players[] = {"Cai", "Kelsea", "Nick"};
 int playerRange[numPlayers];
 int owed[numPlayers]; //array of how many times each player still has to deposit change
@@ -64,8 +65,9 @@ void setup() {
 
   //check if it has been initialized
   if (EEPROM.read(0) != 1) {
-      for (int i = 0; i < numPlayers; i++) {
+      for (int i = 1; i < numPlayers; i++) {
         EEPROM.write(i, 0);
+        EEPROM.write(i + numPlayers, 0);
       }
       EEPROM.write(0, 1);
   }
@@ -163,7 +165,7 @@ int addOwe(int player)
   lcd.setCursor(0, 1);
   lcd.print("New amount owed for " + players[player] + ":");
   lcd.print(owed[player]);
-  EEPROM.write(player, owed[player]);
+  EEPROM.write(player + 1, owed[player]);
   delay(250);
   return owed[player];
 }
@@ -173,14 +175,14 @@ int addDeposit(int player)
   deposited[player]++;
   if (owed[player] > 0) {
     owed[player]--;
-    EEPROM.write(player, owed[player]);
+    EEPROM.write(player + 1, owed[player]);
   }
   lcd.clear();
   lcd.print("Deposited one coin!");
   lcd.setCursor(0, 1);
   lcd.print("New amount deposited for " + players[player] + ":");
   lcd.print(deposited[player]);
-  EEPROM.write(player, deposited[player]);
+  EEPROM.write(player + offset, deposited[player]);
   delay(250);
   return deposited[player];
 }
