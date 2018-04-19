@@ -63,29 +63,35 @@ int oweState = 0, depState = 0;
 
 void setup() {
 
+   // set up the LCD's number of columns and rows:
+  lcd.begin(16, 2);
+  // Print a mess age to the LCD.
+  lcd.display();
+
   //check if it has been initialized
   if (EEPROM.read(0) != 1) {
+    lcd.print("Initializing...");
       for (int i = 1; i < numPlayers; i++) {
         EEPROM.write(i, 0);
         EEPROM.write(i + numPlayers, 0);
       }
       EEPROM.write(0, 1);
   }
+  else {
+    lcd.print("Booting up...");
+    //EEPROM.write(0, 0);
+  }
+  delay(500);
   
   for (int i = 0; i < numPlayers; i++)
   {
    playerRange[i] =  (potMax / 3) * (i+1);
-   owed[i] = EEPROM.read(i);
-   deposited[i] = EEPROM.read(i + numPlayers);
+   owed[i] = EEPROM.read(i + 1);
+   deposited[i] = EEPROM.read(i + offset);
   }
   //set up buttons
   pinMode(owePin, INPUT);
   pinMode(depositPin, INPUT);
-  
-  // set up the LCD's number of columns and rows:
-  lcd.begin(16, 2);
-  // Print a message to the LCD.
-  lcd.display();
 
 }
 
@@ -102,14 +108,16 @@ void loop() {
   oweState = digitalRead(owePin);
   if (oweState == HIGH) {
     addOwe(player);
+    delay(500);
   }
 
   depState = digitalRead(depositPin);
   if (depState == HIGH) {
     addDeposit(player);
+    delay(500);
   }
   
-  delay(500);
+  delay(250);
   // Turn on the display:
 }
 
@@ -147,13 +155,14 @@ void printAll(int index)
   lcd.setCursor(7, 1);
   lcd.print("O:");
   lcd.print(owed[index]);
-  lcd.print("  D:");
+  lcd.setCursor(12, 1);
+  lcd.print("D:");
   lcd.print(deposited[index]);
-  lcd.print("     ");
+  //lcd.print("     ");
 
   //third line
-  //lcd.setCursor(0, 3);
-  lcd.print("WORD: STEVEN");
+  lcd.setCursor(19, 1);
+  lcd.print(" WORD: STEVEN");
 }
 
 
@@ -161,12 +170,11 @@ int addOwe(int player)
 {
   owed[player]++;
   lcd.clear();
-  lcd.print("Owed one coin.");
+  lcd.print("Owed +1 coin.");
   lcd.setCursor(0, 1);
   lcd.print("New amount owed for " + players[player] + ":");
   lcd.print(owed[player]);
   EEPROM.write(player + 1, owed[player]);
-  delay(250);
   return owed[player];
 }
 
@@ -178,12 +186,11 @@ int addDeposit(int player)
     EEPROM.write(player + 1, owed[player]);
   }
   lcd.clear();
-  lcd.print("Deposited one coin!");
+  lcd.print("Deposited +1 coin!");
   lcd.setCursor(0, 1);
   lcd.print("New amount deposited for " + players[player] + ":");
   lcd.print(deposited[player]);
   EEPROM.write(player + offset, deposited[player]);
-  delay(250);
   return deposited[player];
 }
 
