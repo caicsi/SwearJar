@@ -56,6 +56,7 @@ int deposited[numPlayers]; //array of how many times each player has deposited c
 LiquidCrystal lcd(rs, en, d4, d5, d6, d7);
 int potPin = 0;
 int oweState = 0, depState = 0;
+int activePlayer;
 
 // EEPROM storage:
 // first byte says whether or not it has been initialized
@@ -81,6 +82,9 @@ void setup() {
     lcd.print("Booting up...");
     //EEPROM.write(0, 0);
   }
+
+  activePlayer = getName();
+  
   delay(500);
   
   for (int i = 0; i < numPlayers; i++)
@@ -93,32 +97,38 @@ void setup() {
   pinMode(owePin, INPUT);
   pinMode(depositPin, INPUT);
 
+  printAll(activePlayer);
+
 }
 
 void loop() {
-  // Turn off the display:
-  int player = getName();
-  //lcd.clear();
-  //lcd.print(players[player]);
-
-  //Print to display
-  printAll(player);
-
+  bool updated = false;
+  int newPlayer = getName();
+  if (activePlayer != newPlayer)
+  {
+    activePlayer = newPlayer;
+    updated = true;
+  }
+  
   //get button input
   oweState = digitalRead(owePin);
-  if (oweState == HIGH) {
-    addOwe(player);
-    delay(500);
+  if (oweState == HIGH) 
+  {
+    addOwe(activePlayer);
+    delay(750);
+    updated = true;
   }
 
   depState = digitalRead(depositPin);
-  if (depState == HIGH) {
-    addDeposit(player);
-    delay(500);
+  if (depState == HIGH) 
+  {
+    addDeposit(activePlayer);
+    delay(750);
+    updated = true;
   }
-  
-  delay(250);
-  // Turn on the display:
+
+  if (updated)
+    printAll(activePlayer);
 }
 
 int getName()
