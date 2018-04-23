@@ -1,27 +1,6 @@
 /*
   LiquidCrystal Library - display() and noDisplay()
 
-  Demonstrates the use a 16x2 LCD display.  The LiquidCrystal
-  library works with all LCD displays that are compatible with the
-  Hitachi HD44780 driver. There are many of them out there, and you
-  can usually tell them by the 16-pin interface.
-
-  This sketch prints "Hello World!" to the LCD and uses the
-  display() and noDisplay() functions to turn on and off
-  the display.
-
-  The circuit:
-   LCD RS pin to digital pin 12
-   LCD Enable pin to digital pin 11
-   LCD D4 pin to digital pin 5
-   LCD D5 pin to digital pin 4
-   LCD D6 pin to digital pin 3
-   LCD D7 pin to digital pin 2
-   LCD R/W pin to ground
-   10K resistor:
-   ends to +5V and ground
-   wiper to LCD VO pin (pin 3)
-
   Library originally added 18 Apr 2008
   by David A. Mellis
   library modified 5 Jul 2009
@@ -45,16 +24,15 @@
 // initialize the library by associating any needed LCD interface pin
 // with the arduino pin number it is connected to
 const int rs = 12, en = 11, d4 = 5, d5 = 4, d6 = 3, d7 = 2,
-          potMax = 1024, owePin = 7, depositPin = 8;
-const int numPlayers = 3;
-int offset = numPlayers + 1;
+          owePin = 7, depositPin = 8, potPin = 0;
+const int NUM_PLAYERS = 3, POT_MAX = 1024, OFFSET = NUM_PLAYERS + 1;
 const String players[] = {"Cai", "Kelsea", "Nick"};
-int playerRange[numPlayers];
-int owed[numPlayers]; //array of how many times each player still has to deposit change
-int deposited[numPlayers]; //array of how many times each player has deposited change
-//int storage[numPlayers * 2]; //array of # of change owed and deposited
+
+int playerRange[NUM_PLAYERS];
+int owed[NUM_PLAYERS]; //array of how many times each player still has to deposit change
+int deposited[NUM_PLAYERS]; //array of how many times each player has deposited change
+
 LiquidCrystal lcd(rs, en, d4, d5, d6, d7);
-int potPin = 0;
 int oweState = 0, depState = 0;
 int activePlayer;
 
@@ -72,9 +50,9 @@ void setup() {
   //check if it has been initialized
   if (EEPROM.read(0) != 1) {
     lcd.print("Initializing...");
-      for (int i = 1; i < numPlayers; i++) {
+      for (int i = 1; i < NUM_PLAYERS; i++) {
         EEPROM.write(i, 0);
-        EEPROM.write(i + numPlayers, 0);
+        EEPROM.write(i + NUM_PLAYERS, 0);
       }
       EEPROM.write(0, 1);
   }
@@ -87,11 +65,11 @@ void setup() {
   
   delay(500);
   
-  for (int i = 0; i < numPlayers; i++)
+  for (int i = 0; i < NUM_PLAYERS; i++)
   {
-   playerRange[i] =  (potMax / 3) * (i+1);
+   playerRange[i] =  (POT_MAX / 3) * (i+1);
    owed[i] = EEPROM.read(i + 1);
-   deposited[i] = EEPROM.read(i + offset);
+   deposited[i] = EEPROM.read(i + OFFSET);
   }
   //set up buttons
   pinMode(owePin, INPUT);
@@ -135,7 +113,7 @@ int getName()
 {
   int input = analogRead(potPin);
 
-  for (int i = 0; i < numPlayers; i++)
+  for (int i = 0; i < NUM_PLAYERS; i++)
   {
     if (input <= playerRange[i])
     {
@@ -200,13 +178,13 @@ int addDeposit(int player)
   lcd.setCursor(0, 1);
   lcd.print("New amount deposited for " + players[player] + ":");
   lcd.print(deposited[player]);
-  EEPROM.write(player + offset, deposited[player]);
+  EEPROM.write(player + OFFSET, deposited[player]);
   return deposited[player];
 }
 
 //int getPlayerIndex(String player)
 //{
-//  for (int i = 0; i < numPlayers; i++) {
+//  for (int i = 0; i < NUM_PLAYERS; i++) {
 //    if (players[i] == player) {
 //      return i;
 //    }
