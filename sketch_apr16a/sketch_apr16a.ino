@@ -109,10 +109,10 @@ void loop() {
     printAll(activePlayer);
 }
 
-int getName()
+int getName() 
 {
   int input = analogRead(potPin);
-
+  asm volatile (" ");
   for (int i = 0; i < NUM_PLAYERS; i++)
   {
     if (input <= playerRange[i])
@@ -122,7 +122,6 @@ int getName()
     }
   }
   //if potentiometer reads out of range for some reason
-  //return players[0] + " " + input; 
   return 0;
 }
 
