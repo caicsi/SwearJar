@@ -125,22 +125,27 @@ int getName()
 
 int getNameAsm()
 {
-  int i = 0;
-  asm ( 
-      "mov r0,%0 \n\t"
-      "mov r19, r0 \n\t"
-     
-      "loop: dec r19 ; \n\t"
-
-        "cpi r19, 0 \n\t"
-        "brlo loop \n\t"
-        "nop ; Exit loop (do nothing) \n\t"
-       : "=r" (i));
+  asm volatile (
+      "mov r16, 0 \n\t"               //set counter to zero
+      "mov r17, %[pot] \n\t"          //get potentiometer reading
+      "mov r18, %[potMax] \n\t"       //get max reading for poteniometer
+      "mov r19,%[players] \n\t"       //get number of players
+ 
+      "loop: "                        //loop to find index of player based on pot
+      
+      
+      "cpi r19, 0 \n\t"
+      "brne loop \n\t"
+      "nop ; Exit loop (do nothing) \n\t"
+     : 
+     : [players] "n" (NUM_PLAYERS),
+       [potMax] "n" (POT_MAX)
+  );
 }
 
 //print:
 //        OWE+  DEPOSIT+
-// Kelsea  O:15 D:80
+// Kelsea O:15 D:80
 // WORD: WHATEVER
 void printAll(int index) 
 {
