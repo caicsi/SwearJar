@@ -112,17 +112,30 @@ void loop() {
 int getName() 
 {
   int input = analogRead(potPin);
-  asm volatile (" ");
   for (int i = 0; i < NUM_PLAYERS; i++)
   {
     if (input <= playerRange[i])
     {
-      //return players[i] + " " + input;
       return i;
     }
   }
   //if potentiometer reads out of range for some reason
   return 0;
+}
+
+int getNameAsm()
+{
+  int i = 0;
+  asm ( 
+      "mov r0,%0 \n\t"
+      "mov r19, r0 \n\t"
+     
+      "loop: dec r19 ; \n\t"
+
+        "cpi r19, 0 \n\t"
+        "brlo loop \n\t"
+        "nop ; Exit loop (do nothing) \n\t"
+       : "=r" (i));
 }
 
 //print:
