@@ -23,8 +23,8 @@
 #include <EEPROM.h>
 // initialize the library by associating any needed LCD interface pin
 // with the arduino pin number it is connected to
-const int rs = 12, en = 11, d4 = 5, d5 = 4, d6 = 3, d7 = 2,
-          owePin = 7, depositPin = 8, potPin = 0;
+const int rs = 2, en = 3, d4 = 4, d5 = 5, d6 = 6, d7 = 7,
+          owePin = 12, depositPin = 13, potPin = 0;
 const int NUM_PLAYERS = 3, POT_MAX = 1024, OFFSET = NUM_PLAYERS + 1;
 const String players[] = {"Cai", "Kelsea", "Nick"};
 
