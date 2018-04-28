@@ -128,11 +128,15 @@ int getName()
 
 int getNameAsm()
 {
+  //we should really store the ranges in stack or something, or else this will be a pain.
+  int range = POT_MAX / NUM_PLAYERS; //done not in assembly because asm has no division
+
+  int potReading = analogRead(potPin);
+  int index;
   asm volatile (
       "mov r16, 0 \n\t"               //set counter to zero
-      "mov r17, 0 \n\t"          //get potentiometer reading
-      "mov r18, %[potMax] \n\t"       //get max reading for poteniometer
-      "mov r19,%[players] \n\t"       //get number of players
+      ";mov r17, %[pot] \n\t"          //get potentiometer reading
+      ";mov r18, %[range] \n\t"       //get max reading for poteniometer
  
       "divLoop: "                        //loop to find index of player based on pot
         " \n\t"
@@ -142,15 +146,22 @@ int getNameAsm()
         " \n\t"
 
       // will give range in the X register
-      "loop:"
-      
-      "cpi r19, 0 \n\t"
-      "brne loop \n\t"
-      "nop ; Exit loop (do nothing) \n\t"
-     : 
+ 
+      "loop: "                        //loop to find index of player based on pot
+          "cp r17, r18 \n\t"         //compare pot reading to range
+          "brlt end \n\t"             // if pot < range, jump to end
+          "inc r16 \n\t"              // if not, then increase counter
+          "subi r18, 341 \n\t"   // subtract range from pot reading
+          "jmp loop \n\t"             // and loop back
+
+      "end: "
+          "mov %0, r18 \n\t"    //return counter
+     : "=r" (index)
      : [players] "n" (NUM_PLAYERS),
        [potMax] "n" (POT_MAX)
+     : "r16", "r17", "r18" //clobbers
   );
+  return index;
 }
 
 //print:
@@ -178,6 +189,7 @@ void printAll(int index)
   //third line
   lcd.setCursor(19, 1);
   lcd.print(" WORD: STEVEN");
+  lcd.print(getNameAsm());
 }
 
 
