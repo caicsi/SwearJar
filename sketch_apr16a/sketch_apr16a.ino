@@ -135,8 +135,9 @@ int getNameAsm()
   int index;
   asm volatile (
       "mov r16, 0 \n\t"               //set counter to zero
-      ";mov r17, %[pot] \n\t"          //get potentiometer reading
-      ";mov r18, %[range] \n\t"       //get max reading for poteniometer
+      ";mov r17, 0 \n\t"          //get potentiometer reading
+      ";mov XH, HIGH(potMax) \n\t"       //get max reading for poteniometer
+      ";mov XL, LOW(potMax) \n\t"
  
       "divLoop: "                        //loop to find index of player based on pot
         " \n\t"
@@ -151,7 +152,7 @@ int getNameAsm()
           "cp r17, r18 \n\t"         //compare pot reading to range
           "brlt end \n\t"             // if pot < range, jump to end
           "inc r16 \n\t"              // if not, then increase counter
-          "subi r18, 341 \n\t"   // subtract range from pot reading
+          "subi r18, 0 \n\t"   // subtract range from pot reading
           "jmp loop \n\t"             // and loop back
 
       "end: "
