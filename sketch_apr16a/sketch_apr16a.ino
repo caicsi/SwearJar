@@ -18,6 +18,9 @@
 
 */
 
+#define POT_MAX 1024
+#define NUM_PLAYERS 3
+
 // include the library code:
 #include <LiquidCrystal.h>
 #include <EEPROM.h>
@@ -25,7 +28,7 @@
 // with the arduino pin number it is connected to
 const int rs = 2, en = 3, d4 = 4, d5 = 5, d6 = 6, d7 = 7,
           owePin = 12, depositPin = 13, potPin = 0;
-const int NUM_PLAYERS = 3, POT_MAX = 1024, OFFSET = NUM_PLAYERS + 1;
+const int OFFSET = NUM_PLAYERS + 1;
 const String players[] = {"Cai", "Kelsea", "Nick"};
 
 int playerRange[NUM_PLAYERS];
@@ -127,12 +130,19 @@ int getNameAsm()
 {
   asm volatile (
       "mov r16, 0 \n\t"               //set counter to zero
-      "mov r17, %[pot] \n\t"          //get potentiometer reading
+      "mov r17, 0 \n\t"          //get potentiometer reading
       "mov r18, %[potMax] \n\t"       //get max reading for poteniometer
       "mov r19,%[players] \n\t"       //get number of players
  
-      "loop: "                        //loop to find index of player based on pot
-      
+      "divLoop: "                        //loop to find index of player based on pot
+        " \n\t"
+        " \n\t"
+        " \n\t"
+        " \n\t"
+        " \n\t"
+
+      // will give range in the X register
+      "loop:"
       
       "cpi r19, 0 \n\t"
       "brne loop \n\t"
