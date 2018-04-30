@@ -1,3 +1,5 @@
+
+
 /*
   LiquidCrystal Library - display() and noDisplay()
 
@@ -23,6 +25,7 @@
 // include the library code:
 #include <LiquidCrystal.h>
 #include <EEPROM.h>
+#include "./getNameAsmLib.h"
 
 // initialize the library by associating any needed LCD interface pin
 // with the arduino pin number it is connected to
@@ -96,6 +99,8 @@ void setup() {
   // best bug ever tho
   //printAll(activePlayer);
 
+  lcd.clear();
+
   
 }
 
@@ -109,8 +114,7 @@ void loop() {
   }
   
   //menu
-  //if (activePlayer == -2) {
-  if (false) {
+  if (activePlayer == 254) {
     //reset button
     button1state = digitalRead(button1pin);
     if (button1state == HIGH) {
@@ -149,8 +153,7 @@ void loop() {
   }
 
   if (updated) {
-    //if (activePlayer == -2) {
-    if (false) {
+    if (activePlayer == 254) {
       printMenu();
     }
     else {
