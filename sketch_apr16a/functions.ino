@@ -30,13 +30,14 @@ void printAll(int index)
 
   //second line
   lcd.setCursor(0, 1);
-  lcd.print(players[index]);
-  lcd.setCursor(7, 1);
-  lcd.print("O:");
-  lcd.print(owed[index]);
-  lcd.setCursor(12, 1);
-  lcd.print("D:");
-  lcd.print(deposited[index]);
+  //lcd.print(players[index]);
+  lcd.print(getNameAsm());
+//  lcd.setCursor(7, 1);
+//  lcd.print("O:");
+//  lcd.print(owed[index]);
+//  lcd.setCursor(12, 1);
+//  lcd.print("D:");
+//  lcd.print(deposited[index]);
 
   //third line
 

@@ -95,6 +95,8 @@ void setup() {
   //uncomment this if you want to see the Eyes of God. (aka uninitialized data) 
   // best bug ever tho
   //printAll(activePlayer);
+
+  
 }
 
 void loop() {
@@ -107,8 +109,8 @@ void loop() {
   }
   
   //menu
-  if (activePlayer == -2) {
-
+  //if (activePlayer == -2) {
+  if (false) {
     //reset button
     button1state = digitalRead(button1pin);
     if (button1state == HIGH) {
@@ -147,7 +149,8 @@ void loop() {
   }
 
   if (updated) {
-    if (activePlayer == -2) {
+    //if (activePlayer == -2) {
+    if (false) {
       printMenu();
     }
     else {
