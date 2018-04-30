@@ -66,7 +66,7 @@ void setup() {
       EEPROM.write(i, 0);
       EEPROM.write(i + NUM_PLAYERS, 0);
     }
-    delay(1000);
+    //delay(1000);
 
     //initialize word
     loopChangeWord(true);
@@ -127,8 +127,9 @@ void loop() {
     button2state = digitalRead(button2pin);
     if (button2state == HIGH) 
     {
-      updated = loopChangeWord(false);
+      loopChangeWord(false);
       delay(500);
+      updated = true;
     }
   }
   

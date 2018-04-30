@@ -60,9 +60,11 @@ bool loopChangeWord(bool initial)
     {
       //done button
       if (activeLetter == ' ' || selectedLetter == SWEAR_MAX_LENGTH) {
-        swear = done(selectedLetter, newWord);
-        storeWord(newWord, selectedLetter);
-        return true;
+        if (selectedLetter != 0) {
+          swear = done(selectedLetter, newWord);
+          storeWord(newWord, selectedLetter);
+          return true;
+        }
       }
   
       //next button
@@ -138,9 +140,12 @@ void printChangeWord(bool initial, int selectedLetter, char activeLetter, char n
     label1 = "BACK";
   }
   
-  if (selectedLetter == SWEAR_MAX_LENGTH || activeLetter == ' ') 
-    label2 = "DONE";
-    
+  if (selectedLetter == SWEAR_MAX_LENGTH || activeLetter == ' ') { 
+    if (selectedLetter != 0)
+      label2 = "DONE";
+    else
+      label2 = "    ";
+  }
   else 
     label2 = "NEXT";
 
